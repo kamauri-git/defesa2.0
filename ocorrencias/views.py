@@ -7,8 +7,6 @@ from django.utils import timezone
 from .models import Ocorrencia
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from reportlab.lib.pagesizes import letter # type: ignore
-from reportlab.pdfgen import canvas # type: ignore
 from django.shortcuts import render
 
 # Função para a página inicial
