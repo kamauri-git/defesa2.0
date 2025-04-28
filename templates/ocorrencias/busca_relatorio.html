@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Busca e Relatórios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Mesmo estilo de antes, adapte conforme necessário */
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #fff3e0;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background: #ff9800;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 2em;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .form-container input {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      padding: 15px 40px;
+      font-size: 1.2em;
+      margin-top: 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 30px;
+      background-color: #fb8c00;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:hover {
+      background-color: #f57c00;
+      transform: translateY(-2px);
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    Busca e Relatórios
+  </header>
+
+  <div class="container">
+    <div class="form-container">
+      <form method="GET">
+        <input type="text" name="bairro" placeholder="Bairro" value="{{ bairro }}">
+        <input type="date" name="data_inicial" value="{{ data_inicial }}">
+        <input type="date" name="data_final" value="{{ data_final }}">
+        <button type="submit" class="btn">Buscar</button>
+      </form>
+    </div>
+
+    <!-- Tabela de Resultados -->
+    <table>
+      <thead>
+        <tr>
+          <th>N.º</th>
+          <th>SIGRC</th>
+          <th>Endereço</th>
+          <th>Bairro</th>
+          <th>Distrito</th>
+          <th>Área de Risco</th>
+          <th>Motivo</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ocorrencia in ocorrencias %}
+        <tr>
+          <td>{{ ocorrencia.numero }}</td>
+          <td>{{ ocorrencia.sigrc }}</td>
+          <td>{{ ocorrencia.endereco }}</td>
+          <td>{{ ocorrencia.bairro }}</td>
+          <td>{{ ocorrencia.distrito }}</td>
+          <td>{{ ocorrencia.area_risco }}</td>
+          <td>{{ ocorrencia.motivo }}</td>
+          <td>{{ ocorrencia.data }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">Nenhuma ocorrência encontrada.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Botão Gerar PDF -->
+    <a href="{% url 'gerar_relatorio_pdf' %}?data_inicial={{ data_inicial }}&data_final={{ data_final }}&bairro={{ bairro }}" class="btn">
+      Gerar Relatório PDF
+    </a>
+  </div>
+</body>
+</html>

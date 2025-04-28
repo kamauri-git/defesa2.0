@@ -1,3 +1,4 @@
+import io
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_date
 from ocorrencias.models import Ocorrencia
@@ -5,7 +6,10 @@ from .forms import OcorrenciaForm
 from django.utils import timezone
 from .models import Ocorrencia
 from django.http import HttpResponse
-
+from django.template.loader import render_to_string
+from reportlab.lib.pagesizes import letter # type: ignore
+from reportlab.pdfgen import canvas # type: ignore
+from django.shortcuts import render
 
 # Função para a página inicial
 def home(request):
@@ -61,6 +65,71 @@ def listar_ocorrencias(request):
     ocorrencias = Ocorrencia.objects.all()
     return render(request, 'ocorrencias/lista_ocorrencias.html', {'ocorrencias': ocorrencias})
 
+def gerar_relatorio_pdf(request):
+    # Filtros: obter parâmetros da requisição (ex: data, bairro, etc)
+    data_inicial = request.GET.get('data_inicial', None)
+    data_final = request.GET.get('data_final', None)
+    bairro = request.GET.get('bairro', None)
+    
+    # Filtrar ocorrências com base nos parâmetros (ajuste conforme necessário)
+    ocorrencias = Ocorrencia.objects.all()
+    
+    if data_inicial:
+        ocorrencias = ocorrencias.filter(data__gte=data_inicial)
+    
+    if data_final:
+        ocorrencias = ocorrencias.filter(data__lte=data_final)
+    
+    if bairro:
+        ocorrencias = ocorrencias.filter(bairro__icontains=bairro)
+    
+    # Criando o PDF
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    text = p.beginText(40, 750)
+    text.setFont("Helvetica", 10)
 
+    text.textLine("Relatório de Ocorrências")
+    text.textLine("-" * 40)
+
+    # Adicionar as ocorrências ao PDF
+    for ocorrencia in ocorrencias:
+        text.textLine(f"N.º: {ocorrencia.numero} | SIGRC: {ocorrencia.sigrc} | "
+                      f"Endereço: {ocorrencia.endereco} | Bairro: {ocorrencia.bairro} | "
+                      f"Distrito: {ocorrencia.distrito} | Data: {ocorrencia.data}")
+    
+    p.drawText(text)
+    p.showPage()
+    p.save()
+
+    # Enviar o PDF como resposta
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf')
+
+
+# Função para página de busca e relatórios
+def busca_relatorios(request):
+    # Obter as ocorrências com base no filtro
+    data_inicial = request.GET.get('data_inicial', '')
+    data_final = request.GET.get('data_final', '')
+    bairro = request.GET.get('bairro', '')
+
+    ocorrencias = Ocorrencia.objects.all()
+
+    if data_inicial:
+        ocorrencias = ocorrencias.filter(data__gte=data_inicial)
+    
+    if data_final:
+        ocorrencias = ocorrencias.filter(data__lte=data_final)
+
+    if bairro:
+        ocorrencias = ocorrencias.filter(bairro__icontains=bairro)
+
+    return render(request, 'ocorrencias/busca_relatorio.html', {
+        'ocorrencias': ocorrencias,
+        'data_inicial': data_inicial,
+        'data_final': data_final,
+        'bairro': bairro
+    })
 
 
