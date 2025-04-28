@@ -1,0 +1,202 @@
+{% load static %}
+<!-- templates/cadastro_ocorrencia.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CADASTRO DA OCORRÊNCIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #fff3e0;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background: #ff9800;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 2em;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 1200px;
+      width: 100%;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .small { width: 100px; }
+    .medium { width: 180px; }
+    .large { width: 380px; }
+
+    input, select {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 1em;
+      background-color: #fffaf3;
+    }
+
+    .submit-btn, .back-btn {
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.1em;
+      background-color: #fb8c00;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .submit-btn:hover, .back-btn:hover {
+      background-color: #f57c00;
+      transform: translateY(-2px);
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 30px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #333;
+      color: white;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
+    </div>
+    Cadastro de Ocorrência
+  </header>
+
+  <div class="form-container">
+
+    <form method="POST" action="{% url 'salvar_ocorrencia' %}">
+      {% csrf_token %}
+
+      <div class="form-group small">
+        <label for="numero">N.º</label>
+        <input type="number" id="numero" name="numero" required min="1">
+      </div>
+
+      <div class="form-group small">
+        <label for="sigrc">SIGRC</label>
+        <input type="number" id="sigrc" name="sigrc" required min="1">
+      </div>
+
+      <div class="form-group large">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco" required>
+      </div>
+
+      <div class="form-group medium">
+        <label for="bairro">Bairro</label>
+        <input type="text" id="bairro" name="bairro" required>
+      </div>
+
+      <div class="form-group medium">
+        <label for="distrito">Distrito</label>
+        <select id="distrito" name="distrito" required>
+          <option value="">Selecione</option>
+          <option value="Jd. Angela">Jd. Ângela</option>
+          <option value="Jd. São Luis">Jd. São Luís</option>
+        </select>
+      </div>
+
+      <div class="form-group medium">
+        <label for="area_risco">Área de Risco</label>
+        <select id="area_risco" name="area_risco" required>
+          <option value="">Selecione</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+
+      <div class="form-group large">
+        <label for="motivo">Motivo</label>
+        <select id="motivo" name="motivo" required>
+            <option value="">Selecione</option>
+            <option value="Erosão na via">Erosão na via</option>
+            <option value="Deslizamento">Deslizamento</option>
+            <option value="Desabamento">Desabamento</option>
+            <option value="Risco de desabamento">Risco de desabamento</option>
+            <option value="Risco de queda de árvore">Risco de queda de árvore</option>
+            <option value="Queda de árvore">Queda de árvore</option>
+            <option value="Alagamento">Alagamento</option>
+            <option value="Inundação">Inundação</option>
+            <option value="Outros">Outros</option>
+        </select>
+    </div>
+
+      <div class="form-group medium">
+        <label for="data">Data</label>
+        <input type="date" id="data" name="data" required>
+      </div>
+
+      <!-- Botões lado a lado -->
+      <div class="buttons-container">
+        <a href="{% url 'home' %}" style="text-decoration: none;">
+          <button type="button" class="back-btn">⬅ Voltar</button>
+        </a>
+        <button type="submit" class="submit-btn">Salvar Ocorrência</button>
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Defesa Civil - Todos os direitos reservados</p>
+  </footer>
+</body>
+</html>
+
