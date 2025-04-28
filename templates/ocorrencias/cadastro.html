@@ -1,5 +1,4 @@
 {% load static %}
-<!-- templates/cadastro_ocorrencia.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -52,18 +51,32 @@
 
     label {
       font-weight: 600;
+      text-align: center; /* <<< CENTRALIZA O TEXTO */
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 0.95em;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
+      align-items: center; /* <<< CENTRALIZA O GRUPO */
+      width: 220px;
     }
 
-    .small { width: 100px; }
-    .medium { width: 180px; }
-    .large { width: 380px; }
+    .form-group.endereco {
+      flex: 1.5;
+      min-width: 300px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 20px;
+      justify-content: center;
+    }
 
     input, select {
       padding: 10px;
@@ -72,6 +85,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       font-size: 1em;
       background-color: #fffaf3;
+      width: 100%;
     }
 
     .submit-btn, .back-btn {
@@ -106,6 +120,7 @@
       background-color: #333;
       color: white;
       font-size: 0.9em;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -118,40 +133,47 @@
   </header>
 
   <div class="form-container">
-
     <form method="POST" action="{% url 'salvar_ocorrencia' %}">
       {% csrf_token %}
+      {{ form.non_field_errors }}
 
-      <div class="form-group small">
-        <label for="numero">N.º</label>
-        <input type="number" id="numero" name="numero" required min="1">
+      <div class="form-group">
+          <label for="{{ form.numero.id_for_label }}">FOC N.º</label>
+          {{ form.numero }}
+          {{ form.numero.errors }}
       </div>
 
-      <div class="form-group small">
-        <label for="sigrc">SIGRC</label>
-        <input type="number" id="sigrc" name="sigrc" required min="1">
+      <div class="form-group">
+          <label for="{{ form.sigrc.id_for_label }}">SIGRC N.º</label>
+          {{ form.sigrc }}
+          {{ form.sigrc.errors }}
       </div>
 
-      <div class="form-group large">
-        <label for="endereco">Endereço</label>
-        <input type="text" id="endereco" name="endereco" required>
+      <!-- Linha combinada: Endereço | Bairro | Distrito -->
+      <div class="form-row">
+        <div class="form-group endereco">
+          {{ form.endereco.label_tag }}
+          {{ form.endereco }}
+          {{ form.endereco.errors }}
+        </div>
+
+        <div class="form-group">
+          {{ form.bairro.label_tag }}
+          {{ form.bairro }}
+          {{ form.bairro.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="distrito">Distrito</label>
+          <select name="distrito" id="distrito" required>
+              <option value="">Selecione</option>
+              <option value="Jd. Angela">Jardim Ângela</option>
+              <option value="Jd. São Luis">Jardim São Luís</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group medium">
-        <label for="bairro">Bairro</label>
-        <input type="text" id="bairro" name="bairro" required>
-      </div>
-
-      <div class="form-group medium">
-        <label for="distrito">Distrito</label>
-        <select id="distrito" name="distrito" required>
-          <option value="">Selecione</option>
-          <option value="Jd. Angela">Jd. Ângela</option>
-          <option value="Jd. São Luis">Jd. São Luís</option>
-        </select>
-      </div>
-
-      <div class="form-group medium">
+      <div class="form-group">
         <label for="area_risco">Área de Risco</label>
         <select id="area_risco" name="area_risco" required>
           <option value="">Selecione</option>
@@ -163,9 +185,9 @@
         </select>
       </div>
 
-      <div class="form-group large">
+      <div class="form-group">
         <label for="motivo">Motivo</label>
-        <select id="motivo" name="motivo" required>
+        <select name="motivo" id="motivo" required>
             <option value="">Selecione</option>
             <option value="Erosão na via">Erosão na via</option>
             <option value="Deslizamento">Deslizamento</option>
@@ -177,19 +199,18 @@
             <option value="Inundação">Inundação</option>
             <option value="Outros">Outros</option>
         </select>
-    </div>
+      </div>
 
-      <div class="form-group medium">
+      <div class="form-group">
         <label for="data">Data</label>
         <input type="date" id="data" name="data" required>
       </div>
 
-      <!-- Botões lado a lado -->
       <div class="buttons-container">
-        <a href="{% url 'home' %}" style="text-decoration: none;">
-          <button type="button" class="back-btn">⬅ Voltar</button>
-        </a>
-        <button type="submit" class="submit-btn">Salvar Ocorrência</button>
+          <a href="{% url 'home' %}" style="text-decoration: none;">
+              <button type="button" class="back-btn">⬅ Voltar</button>
+          </a>
+          <button type="submit" class="submit-btn">Salvar Ocorrência</button>
       </div>
     </form>
   </div>
@@ -199,4 +220,3 @@
   </footer>
 </body>
 </html>
-

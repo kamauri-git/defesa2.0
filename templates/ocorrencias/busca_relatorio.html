@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Busca e Relatórios</title>
+  <title>BUSCA E RELATÓRIOS</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Mesmo estilo de antes, adapte conforme necessário */
@@ -73,20 +73,22 @@
 
   <div class="container">
     <div class="form-container">
-      <form method="GET">
-        <input type="text" name="bairro" placeholder="Bairro" value="{{ bairro }}">
-        <input type="date" name="data_inicial" value="{{ data_inicial }}">
-        <input type="date" name="data_final" value="{{ data_final }}">
-        <button type="submit" class="btn">Buscar</button>
-      </form>
+      <form method="get">
+        <input type="date" name="data_inicial" placeholder="Data Inicial">
+        <input type="date" name="data_final" placeholder="Data Final">
+        <input type="text" name="endereco" placeholder="Endereço">
+        <input type="text" name="distrito" placeholder="Distrito">
+        <input type="text" name="motivo" placeholder="Motivo">
+        <button type="submit">Filtrar</button>
+    </form>
     </div>
 
     <!-- Tabela de Resultados -->
     <table>
       <thead>
         <tr>
-          <th>N.º</th>
-          <th>SIGRC</th>
+          <th>FOC N.º</th>
+          <th>SIGRC N.º</th>
           <th>Endereço</th>
           <th>Bairro</th>
           <th>Distrito</th>

@@ -8,6 +8,7 @@ from .models import Ocorrencia
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render
+from django.db.models import Q
 
 # Função para a página inicial
 def home(request):
@@ -107,27 +108,25 @@ def gerar_relatorio_pdf(request):
 
 # Função para página de busca e relatórios
 def busca_relatorios(request):
-    # Obter as ocorrências com base no filtro
-    data_inicial = request.GET.get('data_inicial', '')
-    data_final = request.GET.get('data_final', '')
-    bairro = request.GET.get('bairro', '')
-
+    data_inicial = request.GET.get('data_inicial')
+    data_final = request.GET.get('data_final')
+    endereco = request.GET.get('endereco')
+    distrito = request.GET.get('distrito')
+    motivo = request.GET.get('motivo')
+    
     ocorrencias = Ocorrencia.objects.all()
 
-    if data_inicial:
-        ocorrencias = ocorrencias.filter(data__gte=data_inicial)
+    if data_inicial and data_final:
+        ocorrencias = ocorrencias.filter(data__range=[data_inicial, data_final])
+
+    if endereco:
+        ocorrencias = ocorrencias.filter(endereco__icontains=endereco)
     
-    if data_final:
-        ocorrencias = ocorrencias.filter(data__lte=data_final)
+    if distrito:
+        ocorrencias = ocorrencias.filter(distrito__icontains=distrito)
+    
+    if motivo:
+        ocorrencias = ocorrencias.filter(motivo__icontains=motivo)
 
-    if bairro:
-        ocorrencias = ocorrencias.filter(bairro__icontains=bairro)
-
-    return render(request, 'ocorrencias/busca_relatorio.html', {
-        'ocorrencias': ocorrencias,
-        'data_inicial': data_inicial,
-        'data_final': data_final,
-        'bairro': bairro
-    })
-
+    return render (request, 'ocorrencias/relatorios.html', {'ocorrencias': ocorrencias})
 
