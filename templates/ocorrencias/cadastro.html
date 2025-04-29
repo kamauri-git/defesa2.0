@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CADASTRO DA OCORRÊNCIA</title>
+  <title>Cadastro de Ocorrência</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -31,65 +31,73 @@
 
     .form-container {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
       padding: 40px 20px;
     }
 
     form {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 20px;
-      justify-content: center;
-      max-width: 1200px;
+      max-width: 800px;
       width: 100%;
       background: #ffffff;
-      padding: 30px;
+      padding: 40px;
       border-radius: 16px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     }
 
-    label {
-      font-weight: 600;
-      text-align: center; /* <<< CENTRALIZA O TEXTO */
-      display: block;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      font-size: 0.95em;
+    .form-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      width: 100%;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      align-items: center; /* <<< CENTRALIZA O GRUPO */
-      width: 220px;
     }
 
-    .form-group.endereco {
-      flex: 1.5;
-      min-width: 300px;
+    .small {
+      flex: 0 0 120px; /* campo pequeno com tamanho fixo */
     }
 
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      gap: 20px;
-      justify-content: center;
+    .medium {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .large {
+      flex: 2;
+      min-width: 400px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      font-size: 0.9em;
     }
 
     input, select {
       padding: 10px;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      font-size: 1em;
       background-color: #fffaf3;
+      font-size: 1em;
       width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
     }
 
     .submit-btn, .back-btn {
-      margin-top: 30px;
       padding: 15px 40px;
       font-size: 1.1em;
       background-color: #fb8c00;
@@ -106,14 +114,6 @@
       transform: translateY(-2px);
     }
 
-    .buttons-container {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 500px;
-      margin-top: 30px;
-    }
-
     footer {
       text-align: center;
       padding: 20px;
@@ -126,9 +126,7 @@
 </head>
 <body>
   <header>
-    <div>
-      <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
-    </div>
+    <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
     Cadastro de Ocorrência
   </header>
 
@@ -137,33 +135,37 @@
       {% csrf_token %}
       {{ form.non_field_errors }}
 
-      <div class="form-group">
+      <!-- Linha 1: FOC e SIGRC -->
+      <div class="form-row">
+        <div class="form-group small">
           <label for="{{ form.numero.id_for_label }}">FOC N.º</label>
           {{ form.numero }}
           {{ form.numero.errors }}
-      </div>
-
-      <div class="form-group">
+        </div>
+        <div class="form-group small">
           <label for="{{ form.sigrc.id_for_label }}">SIGRC N.º</label>
           {{ form.sigrc }}
           {{ form.sigrc.errors }}
+        </div>
       </div>
 
-      <!-- Linha combinada: Endereço | Bairro | Distrito -->
+      <!-- Linha 2: Endereço -->
       <div class="form-row">
-        <div class="form-group endereco">
+        <div class="form-group large">
           {{ form.endereco.label_tag }}
           {{ form.endereco }}
           {{ form.endereco.errors }}
         </div>
+      </div>
 
-        <div class="form-group">
+      <!-- Linha 3: Bairro e Distrito -->
+      <div class="form-row">
+        <div class="form-group medium">
           {{ form.bairro.label_tag }}
           {{ form.bairro }}
           {{ form.bairro.errors }}
         </div>
-
-        <div class="form-group">
+        <div class="form-group medium">
           <label for="distrito">Distrito</label>
           <select name="distrito" id="distrito" required>
               <option value="">Selecione</option>
@@ -173,45 +175,48 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="area_risco">Área de Risco</label>
-        <select id="area_risco" name="area_risco" required>
-          <option value="">Selecione</option>
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="motivo">Motivo</label>
-        <select name="motivo" id="motivo" required>
+      <!-- Linha 4: Área de risco, Motivo e Data -->
+      <div class="form-row">
+        <div class="form-group small">
+          <label for="area_risco">Área de Risco</label>
+          <select id="area_risco" name="area_risco" required>
             <option value="">Selecione</option>
-            <option value="Erosão na via">Erosão na via</option>
-            <option value="Deslizamento">Deslizamento</option>
-            <option value="Desabamento">Desabamento</option>
-            <option value="Risco de desabamento">Risco de desabamento</option>
-            <option value="Risco de queda de árvore">Risco de queda de árvore</option>
-            <option value="Queda de árvore">Queda de árvore</option>
-            <option value="Alagamento">Alagamento</option>
-            <option value="Inundação">Inundação</option>
-            <option value="Outros">Outros</option>
-        </select>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div class="form-group large">
+          <label for="motivo">Motivo</label>
+          <select name="motivo" id="motivo" required>
+              <option value="">Selecione</option>
+              <option value="Erosão na via">Erosão na via</option>
+              <option value="Deslizamento">Deslizamento</option>
+              <option value="Desabamento">Desabamento</option>
+              <option value="Risco de desabamento">Risco de desabamento</option>
+              <option value="Risco de queda de árvore">Risco de queda de árvore</option>
+              <option value="Queda de árvore">Queda de árvore</option>
+              <option value="Alagamento">Alagamento</option>
+              <option value="Inundação">Inundação</option>
+              <option value="Outros">Outros</option>
+          </select>
+        </div>
+        <div class="form-group small">
+          <label for="data">Data</label>
+          <input type="date" id="data" name="data" required>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="data">Data</label>
-        <input type="date" id="data" name="data" required>
-      </div>
-
+      <!-- Botões -->
       <div class="buttons-container">
-          <a href="{% url 'home' %}" style="text-decoration: none;">
-              <button type="button" class="back-btn">⬅ Voltar</button>
-          </a>
-          <button type="submit" class="submit-btn">Salvar Ocorrência</button>
+        <a href="{% url 'home' %}" style="text-decoration: none;">
+          <button type="button" class="back-btn">⬅ VOLTAR</button>
+        </a>
+        <button type="submit" class="submit-btn">Salvar Ocorrência</button>
       </div>
+
     </form>
   </div>
 

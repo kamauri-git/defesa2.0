@@ -199,7 +199,11 @@
         </tbody>
     </table>
 
-    <a href="{% url 'home' %}" class="btn">Voltar para Home</a>
+    <a href="{% url 'home' %}" class="btn">VOLTAR</a>
+    <a href="{% url 'graficos_ocorrencias' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+        Gerar Gráficos
+    </a>
+    
 </div>
 
 </body>

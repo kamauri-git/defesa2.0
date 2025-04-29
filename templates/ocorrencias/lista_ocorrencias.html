@@ -45,7 +45,7 @@
     }
 
     th, td {
-      padding: 15px;
+      padding: 10px;
       text-align: center;
       border: 1px solid #ddd;
     }
@@ -59,22 +59,62 @@
       background-color: #f9f9f9;
     }
 
+    /* Estilos para os campos de entrada */
+    input[type="text"], input[type="date"] {
+      padding: 12px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus {
+      border-color: #ff9800;
+      outline: none;
+    }
+
+    /* Ajustes específicos de largura */
+    .small-input {
+      width: 80px;
+    }
+
+    .medium-input {
+      width: 150px;
+    }
+
+    .large-input {
+      width: 250px;
+    }
+
+    .extra-large-input {
+      width: 250px; /* Endereço será maior */
+    }
+
     .btn {
-      padding: 15px 40px;
-      font-size: 1.2em;
-      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 0.9em;
+      margin: 2px;
       cursor: pointer;
       border: none;
-      border-radius: 30px;
+      border-radius: 20px;
       background-color: #fb8c00;
       color: white;
       transition: all 0.3s ease;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .btn:hover {
       background-color: #f57c00;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background-color: red;
+    }
+
+    .btn-danger:hover {
+      background-color: darkred;
     }
 
     footer {
@@ -85,6 +125,13 @@
       font-size: 0.9em;
     }
   </style>
+
+  <!-- JavaScript para confirmação de exclusão -->
+  <script>
+    function confirmarExclusao() {
+      return confirm("Você tem certeza que deseja excluir esta ocorrência?");
+    }
+  </script>
 </head>
 <body>
   <header>
@@ -95,42 +142,53 @@
   </header>
 
   <div class="container">
-    <!-- Tabela de registros -->
-    <table>
-      <thead>
-        <tr>
-          <th>N.º</th>
-          <th>SIGRC</th>
-          <th>Endereço</th>
-          <th>Bairro</th>
-          <th>Distrito</th>
-          <th>Área de Risco</th>
-          <th>Motivo</th>
-          <th>Data</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ocorrencia in ocorrencias %}
-        <tr>
-          <td>{{ ocorrencia.numero }}</td>
-          <td>{{ ocorrencia.sigrc }}</td>
-          <td>{{ ocorrencia.endereco }}</td>
-          <td>{{ ocorrencia.bairro }}</td>
-          <td>{{ ocorrencia.distrito }}</td>
-          <td>{{ ocorrencia.area_risco }}</td>
-          <td>{{ ocorrencia.motivo }}</td>
-          <td>{{ ocorrencia.data }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8">Nenhuma ocorrência registrada.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <!-- Tabela de registros com formulário embutido -->
+    <form method="post" action="">
+      {% csrf_token %}
+      <table>
+        <thead>
+          <tr>
+            <th>FOC N.º</th>
+            <th>SIGRC N.º</th>
+            <th>Endereço</th>
+            <th>Bairro</th>
+            <th>Distrito</th>
+            <th>Área de Risco</th>
+            <th>Motivo</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ocorrencia in ocorrencias %}
+          <tr>
+            <form method="post" action="{% url 'editar_ocorrencia_inline' ocorrencia.id %}">
+              {% csrf_token %}
+              <td><input type="text" name="numero" value="{{ ocorrencia.numero }}" class="small-input"></td>
+              <td><input type="text" name="sigrc" value="{{ ocorrencia.sigrc }}" class="small-input"></td>
+              <td><input type="text" name="endereco" value="{{ ocorrencia.endereco }}" class="extra-large-input"></td>
+              <td><input type="text" name="bairro" value="{{ ocorrencia.bairro }}" class="medium-input"></td>
+              <td><input type="text" name="distrito" value="{{ ocorrencia.distrito }}" class="medium-input"></td>
+              <td><input type="text" name="area_risco" value="{{ ocorrencia.area_risco }}" class="small-input"></td>
+              <td><input type="text" name="motivo" value="{{ ocorrencia.motivo }}" class="medium-input"></td>
+              <td><input type="date" name="data" value="{{ ocorrencia.data|date:'Y-m-d' }}"></td>
+              <td>
+                <button type="submit" class="btn">Salvar</button>
+                <a href="{% url 'excluir_ocorrencia' ocorrencia.id %}" class="btn btn-danger" onclick="return confirmarExclusao()">Excluir</a>
+              </td>
+            </form>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9">Nenhuma ocorrência registrada.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </form>
 
     <!-- Botão de voltar -->
-    <button class="btn" onclick="window.location.href='{% url 'home' %}'">Voltar para a Home</button>
+    <a href="{% url 'home' %}" class="btn">VOLTAR</a>
   </div>
 
   <footer>
@@ -138,3 +196,4 @@
   </footer>
 </body>
 </html>
+

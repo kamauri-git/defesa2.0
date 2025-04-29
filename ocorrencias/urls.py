@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from ocorrencias.views import graficos_ocorrencias
 
 urlpatterns = [
     path('', views.home, name='home'),  # Página inicial
@@ -9,4 +10,8 @@ urlpatterns = [
     path('listar/', views.listar_ocorrencias, name='listar'),
     path('relatorios/', views.busca_relatorios, name='relatorios'),  # Nova URL para busca e relatórios
     path('gerar_relatorio_pdf/', views.gerar_relatorio_pdf, name='gerar_relatorio_pdf'),  # URL para gerar PDF
+    path('ocorrencia/editar/<int:id>/', views.editar_ocorrencia_inline, name='editar_ocorrencia_inline'),
+    path('ocorrencia/excluir/<int:id>/', views.excluir_ocorrencia, name='excluir_ocorrencia'),
+    path('graficos/', graficos_ocorrencias, name='graficos_ocorrencias'),
+
 ]
