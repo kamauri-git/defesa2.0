@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
+from django.db import IntegrityError
 
 # Função para a página inicial
 def home(request):
@@ -176,3 +177,17 @@ def graficos_ocorrencias(request):
 
     return render(request, 'ocorrencias/graficos.html', context)
 
+def salvar_ocorrencia(request):
+    if request.method == 'POST':
+        form = OcorrenciaForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('ocorrencias/lista_ocorrencias.html')
+            except IntegrityError as e:
+                if 'ocorrencias_ocorrencia_numero_key' in str(e):
+                    form.add_error('numero', 'Número de FOC já cadastrado.')
+    else:
+        form = OcorrenciaForm()
+
+    return render(request, 'ocorrencias/cadastro.html', {'form': form})

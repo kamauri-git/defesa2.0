@@ -3,7 +3,7 @@ from django.db import models
 class Ocorrencia(models.Model):
     numero = models.IntegerField()
     sigrc = models.IntegerField()
-    tipo = models.CharField(max_length=50, choices=[('ALERTA', 'Alerta'), ('EMERGENCIA', 'Emergência')], default='ALERTA')
+    tipo = models.CharField(max_length=100, blank=True, null=True)
     motivo = models.CharField(max_length=255)  # A coluna foi renomeada de descricao para motivo
     data = models.DateField()
     endereco = models.CharField(max_length=255)

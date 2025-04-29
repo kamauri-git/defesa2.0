@@ -122,18 +122,38 @@
       font-size: 0.9em;
       margin-top: 40px;
     }
+    .error-message {
+      background-color: #ffe0e0;
+      color: #d32f2f;
+      border: 1px solid #f44336;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
-    Cadastro de Ocorrência
+    <h3>CADASTRO DE OCORRÊNCIA</h3>
   </header>
 
   <div class="form-container">
     <form method="POST" action="{% url 'salvar_ocorrencia' %}">
       {% csrf_token %}
       {{ form.non_field_errors }}
+      
+      {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 
       <!-- Linha 1: FOC e SIGRC -->
       <div class="form-row">
@@ -195,7 +215,7 @@
               <option value="Erosão na via">Erosão na via</option>
               <option value="Deslizamento">Deslizamento</option>
               <option value="Desabamento">Desabamento</option>
-              <option value="Rachadura em Edificação">Rachadura em Edificação</option>
+              <option value="Rachadura em Edificação">Rachadura em edificação</option>
               <option value="Risco de desabamento">Risco de desabamento</option>
               <option value="Risco de queda de árvore">Risco de queda de árvore</option>
               <option value="Queda de árvore">Queda de árvore</option>
@@ -222,7 +242,7 @@
   </div>
 
   <footer>
-    <p>&copy; 2025 Defesa Civil - Todos os direitos reservados</p>
+    <p>&copy; 2025 UNIVESP GRUPO PROJETO INTEGRADOR EM COMPUTAÇÃO I - TURMA 005  - Todos os direitos reservados</p>
   </footer>
 </body>
 </html>

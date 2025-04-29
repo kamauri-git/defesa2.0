@@ -1,42 +1,68 @@
 {% load extras %}
 {% block content %}
+<style>
+@media print {
+    body {
+        zoom: 90%;
+        -webkit-print-color-adjust: exact;
+    }
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+canvas {
+    max-width: 100%;
+}
+
+.chart-font {
+    font: 16px 'Segoe UI', sans-serif;
+}
+</style>
+
 <div class="container my-5">
     <!-- Cabeçalho -->
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">📊 RELATÓRIO DDEC-MB</h1>
-        <p class="text-muted">Estatísticas atualizadas das ocorrências por tipo e distrito</p>
+        <p class="text-muted fs-5">Estatísticas de ocorrências</p>
     </div>
 
     <!-- Gráficos -->
     <div class="row justify-content-center g-4">
         <!-- Gráfico por Motivo -->
-        <div class="col-lg-5 col-md-6">
-            <div class="card shadow rounded-4">
+        <div class="col-lg-6 col-md-12">
+            <div class="card shadow rounded-4 p-3">
                 <div class="card-header text-center bg-white border-0">
-                    <H3 class="fw-semibold mb-0">OCORRÊNCIAS POR TIPO/MOTIVO</h3>
-                    <H4 class="text-muted">TOTAL GERAL: {{ total_motivos }}</H4>
+                    <h3 class="fw-semibold mb-0">OCORRÊNCIAS POR TIPO/MOTIVO</h3>
+                    <h4 class="text-muted">TOTAL GERAL: {{ total_motivos }}</h4>
                 </div>
                 <div class="card-body">
                     {% for motivo in motivos_count %}
-                        <p class="mb-1"><strong>{{ motivo.motivo }}</strong>: {{ motivo.total }}</p>
+                        <p class="mb-1 fs-6"><strong>{{ motivo.motivo }}</strong>: {{ motivo.total }}</p>
                     {% endfor %}
-                    <canvas id="graficoMotivos" width="200" height="120"></canvas>
+                    <canvas id="graficoMotivos" height="250" class="chart-font"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Gráfico por Distrito -->
-        <div class="col-lg-5 col-md-6">
-            <div class="card shadow rounded-4">
+        <div class="col-lg-6 col-md-12">
+            <div class="card shadow rounded-4 p-3">
                 <div class="card-header text-center bg-white border-0">
                     <h3 class="fw-semibold mb-0">OCORRÊNCIAS POR DISTRITO</h3>
-                    <H4 class="text-muted">TOTAL GERAL: {{ total_distritos }}</H4>
+                    <h4 class="text-muted">TOTAL GERAL: {{ total_distritos }}</h4>
                 </div>
                 <div class="card-body">
                     {% for distrito in distritos_count %}
-                        <p class="mb-1"><strong>{{ distrito.distrito }}</strong>: {{ distrito.total }}</p>
+                        <p class="mb-1 fs-6"><strong>{{ distrito.distrito }}</strong>: {{ distrito.total }}</p>
                     {% endfor %}
-                    <canvas id="graficoDistritos" width="200" height="120"></canvas>
+                    <canvas id="graficoDistritos" height="250" class="chart-font"></canvas>
                 </div>
             </div>
         </div>
@@ -51,9 +77,7 @@
         datasets: [{
             label: 'Ocorrências',
             data: {{ motivos_count|pluck:"total"|safe }},
-            backgroundColor: [
-                '#4bc0c0', '#ff6384', '#ffce56', '#36a2eb', '#9966ff'
-            ],
+            backgroundColor: ['#4bc0c0', '#ff6384', '#ffce56', '#36a2eb', '#9966ff'],
             borderRadius: 6
         }]
     };
@@ -63,45 +87,68 @@
         datasets: [{
             label: 'Ocorrências',
             data: {{ distritos_count|pluck:"total"|safe }},
-            backgroundColor: [
-                '#ff9f40', '#36a2eb', '#4bc0c0', '#ffcd56', '#9966ff'
-            ],
+            backgroundColor: ['#ff9f40', '#36a2eb', '#4bc0c0', '#ffcd56', '#9966ff'],
             hoverOffset: 10
         }]
+    };
+
+    const baseOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 16
+                    }
+                }
+            },
+            tooltip: {
+                bodyFont: {
+                    size: 16
+                },
+                callbacks: {
+                    label: (ctx) => `${ctx.raw} ocorrências`
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    font: {
+                        size: 16
+                    }
+                }
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        }
     };
 
     new Chart(document.getElementById('graficoMotivos'), {
         type: 'bar',
         data: motivosData,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => `${ctx.raw} ocorrências`
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
+        options: baseOptions
     });
 
     new Chart(document.getElementById('graficoDistritos'), {
         type: 'doughnut',
         data: distritosData,
         options: {
-            responsive: true,
+            ...baseOptions,
+            scales: {},
             plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => `${ctx.raw} ocorrências`
+                ...baseOptions.plugins,
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 16 }
                     }
                 }
             }
