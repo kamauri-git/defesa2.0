@@ -1,150 +1,111 @@
 {% load extras %}
 {% block content %}
-<body class="bg-light">
-    <header class="text-center my-4">
-      <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo" style="max-width: 300px;">
-    </header>
-
 <div class="container my-5">
     <!-- Cabeçalho -->
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">📊 RELATÓRIO DDEC-MB</h1>
-        <p class="text-muted">Estatísticas atualizadas das ocorrências</p>
+        <p class="text-muted">Estatísticas atualizadas das ocorrências por tipo e distrito</p>
     </div>
 
-    <!-- Filtros e Botões -->
-    <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
-        <select id="periodoFiltro" class="form-select w-auto shadow-sm">
-            <option value="7">Últimos 7 dias</option>
-            <option value="30">Últimos 30 dias</option>
-            <option value="90">Últimos 90 dias</option>
-            <option value="custom">Escolher data</option>
-        </select>
-
-        <input type="date" id="dataInicio" class="form-control w-auto shadow-sm d-none">
-        <input type="date" id="dataFim" class="form-control w-auto shadow-sm d-none">
-
-        <button class="btn btn-primary shadow-sm" onclick="exportarPDF()">📄 PDF</button>
-        <button class="btn btn-success shadow-sm" onclick="exportarExcel()">📑 Excel</button>
-    </div>
-
-    <!-- Cards com Gráficos -->
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card shadow rounded-4 h-100">
+    <!-- Gráficos -->
+    <div class="row justify-content-center g-4">
+        <!-- Gráfico por Motivo -->
+        <div class="col-lg-5 col-md-6">
+            <div class="card shadow rounded-4">
+                <div class="card-header text-center bg-white border-0">
+                    <h5 class="fw-semibold mb-0">Ocorrências por Tipo</h5>
+                    <small class="text-muted">Total: {{ total_motivos }}</small>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Ocorrências por Tipo</h5>
-                    <h6 class="card-subtitle mb-3 text-muted">Total: {{ total_motivos }}</h6>
-                    <canvas id="graficoMotivos" style="height:300px;"></canvas>
+                    {% for motivo in motivos_count %}
+                        <p class="mb-1"><strong>{{ motivo.motivo }}</strong>: {{ motivo.total }}</p>
+                    {% endfor %}
+                    <canvas id="graficoMotivos" width="200" height="120"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card shadow rounded-4 h-100">
+        <!-- Gráfico por Distrito -->
+        <div class="col-lg-5 col-md-6">
+            <div class="card shadow rounded-4">
+                <div class="card-header text-center bg-white border-0">
+                    <h5 class="fw-semibold mb-0">Ocorrências por Distrito</h5>
+                    <small class="text-muted">Total: {{ total_distritos }}</small>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Ocorrências por Distrito</h5>
-                    <h6 class="card-subtitle mb-3 text-muted">Total: {{ total_distritos }}</h6>
-                    <canvas id="graficoDistritos" style="height:300px;"></canvas>
+                    {% for distrito in distritos_count %}
+                        <p class="mb-1"><strong>{{ distrito.distrito }}</strong>: {{ distrito.total }}</p>
+                    {% endfor %}
+                    <canvas id="graficoDistritos" width="200" height="120"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-const ctxMotivos = document.getElementById('graficoMotivos').getContext('2d');
-new Chart(ctxMotivos, {
-    type: 'bar',
-    data: {
-        labels: [{% for motivo in motivos_count %}"{{ motivo.motivo }}",{% endfor %}],
+    const motivosData = {
+        labels: {{ motivos_count|pluck:"motivo"|safe }},
         datasets: [{
-            label: 'Quantidade',
-            data: [{% for motivo in motivos_count %}{{ motivo.total }},{% endfor %}],
-            backgroundColor: 'rgba(0, 123, 255, 0.7)',
-            borderRadius: 8,
-            barThickness: 30
+            label: 'Ocorrências',
+            data: {{ motivos_count|pluck:"total"|safe }},
+            backgroundColor: [
+                '#4bc0c0', '#ff6384', '#ffce56', '#36a2eb', '#9966ff'
+            ],
+            borderRadius: 6
         }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display: false } }
-    }
-});
+    };
 
-const ctxDistritos = document.getElementById('graficoDistritos').getContext('2d');
-new Chart(ctxDistritos, {
-    type: 'bar',
-    data: {
-        labels: [{% for distrito in distritos_count %}"{{ distrito.distrito }}",{% endfor %}],
+    const distritosData = {
+        labels: {{ distritos_count|pluck:"distrito"|safe }},
         datasets: [{
-            label: 'Quantidade',
-            data: [{% for distrito in distritos_count %}{{ distrito.total }},{% endfor %}],
-            backgroundColor: 'rgba(255, 193, 7, 0.7)',
-            borderRadius: 8,
-            barThickness: 30
+            label: 'Ocorrências',
+            data: {{ distritos_count|pluck:"total"|safe }},
+            backgroundColor: [
+                '#ff9f40', '#36a2eb', '#4bc0c0', '#ffcd56', '#9966ff'
+            ],
+            hoverOffset: 10
         }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display: false } }
-    }
-});
+    };
 
-function exportarExcel() {
-    const wb = XLSX.utils.book_new();
-    const wsMotivos = XLSX.utils.aoa_to_sheet([
-        ["Motivo", "Total"],
-        {% for motivo in motivos_count %} ["{{ motivo.motivo }}", {{ motivo.total }}], {% endfor %}
-    ]);
-    const wsDistritos = XLSX.utils.aoa_to_sheet([
-        ["Distrito", "Total"],
-        {% for distrito in distritos_count %} ["{{ distrito.distrito }}", {{ distrito.total }}], {% endfor %}
-    ]);
-    XLSX.utils.book_append_sheet(wb, wsMotivos, "Motivos");
-    XLSX.utils.book_append_sheet(wb, wsDistritos, "Distritos");
-    XLSX.writeFile(wb, "relatorio-ddec-mb.xlsx");
-}
+    new Chart(document.getElementById('graficoMotivos'), {
+        type: 'bar',
+        data: motivosData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `${ctx.raw} ocorrências`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
 
-function exportarPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Relatório DDEC-MB", 20, 20);
-
-    doc.setFontSize(12);
-    doc.text("Ocorrências por Tipo:", 20, 30);
-    {% for motivo in motivos_count %}
-        doc.text("{{ motivo.motivo }}: {{ motivo.total }}", 20, 40 + {{ forloop.counter0 }} * 7);
-    {% endfor %}
-
-    doc.text("Ocorrências por Distrito:", 20, 100);
-    {% for distrito in distritos_count %}
-        doc.text("{{ distrito.distrito }}: {{ distrito.total }}", 20, 110 + {{ forloop.counter0 }} * 7);
-    {% endfor %}
-
-    doc.save("relatorio-ddec-mb.pdf");
-}
-
-document.getElementById('periodoFiltro').addEventListener('change', (e) => {
-    const value = e.target.value;
-    const dataInicio = document.getElementById('dataInicio');
-    const dataFim = document.getElementById('dataFim');
-    if (value === "custom") {
-        dataInicio.classList.remove('d-none');
-        dataFim.classList.remove('d-none');
-    } else {
-        dataInicio.classList.add('d-none');
-        dataFim.classList.add('d-none');
-    }
-});
+    new Chart(document.getElementById('graficoDistritos'), {
+        type: 'doughnut',
+        data: distritosData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `${ctx.raw} ocorrências`
+                    }
+                }
+            }
+        }
+    });
 </script>
-</body>
 {% endblock %}
