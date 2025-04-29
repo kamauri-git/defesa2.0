@@ -13,8 +13,8 @@
         <div class="col-lg-5 col-md-6">
             <div class="card shadow rounded-4">
                 <div class="card-header text-center bg-white border-0">
-                    <h5 class="fw-semibold mb-0">Ocorrências por Tipo</h5>
-                    <small class="text-muted">Total: {{ total_motivos }}</small>
+                    <H3 class="fw-semibold mb-0">OCORRÊNCIAS POR TIPO/MOTIVO</h3>
+                    <H4 class="text-muted">TOTAL GERAL: {{ total_motivos }}</H4>
                 </div>
                 <div class="card-body">
                     {% for motivo in motivos_count %}
@@ -29,8 +29,8 @@
         <div class="col-lg-5 col-md-6">
             <div class="card shadow rounded-4">
                 <div class="card-header text-center bg-white border-0">
-                    <h5 class="fw-semibold mb-0">Ocorrências por Distrito</h5>
-                    <small class="text-muted">Total: {{ total_distritos }}</small>
+                    <h3 class="fw-semibold mb-0">OCORRÊNCIAS POR DISTRITO</h3>
+                    <H4 class="text-muted">TOTAL GERAL: {{ total_distritos }}</H4>
                 </div>
                 <div class="card-body">
                     {% for distrito in distritos_count %}
