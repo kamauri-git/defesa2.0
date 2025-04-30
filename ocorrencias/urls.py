@@ -11,6 +11,6 @@ urlpatterns = [
     path('gerar_relatorio_pdf/', views.gerar_relatorio_pdf, name='gerar_relatorio_pdf'),  # URL para gerar PDF
     path('ocorrencia/editar/<int:id>/', views.editar_ocorrencia_inline, name='editar_ocorrencia_inline'),
     path('ocorrencia/excluir/<int:id>/', views.excluir_ocorrencia, name='excluir_ocorrencia'),
-    path('graficos/', graficos_ocorrencias, name='graficos_ocorrencias'),
+    path('graficos/', graficos_ocorrencias, name='graficos_ocorrencias')
 
 ]

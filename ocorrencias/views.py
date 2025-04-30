@@ -24,7 +24,7 @@ def cadastro_ocorrencia(request):
         form = OcorrenciaForm(request.POST)
         if form.is_valid():
             form.save()  # Salva os dados no banco
-            return redirect('ocorrencias/lista_ocorrencias.html')  # Redireciona para a lista de ocorrências
+            return redirect('lista_ocorrencias')  # Redireciona para a lista de ocorrências
     else:
         form = OcorrenciaForm()
 
@@ -40,28 +40,6 @@ def relatorios(request):
     return render(request, 'ocorrencias/relatorios.html')
 
 # Função para salvar a ocorrência
-def salvar_ocorrencia(request):
-    if request.method == 'POST':
-        numero = request.POST.get('numero')
-        sigrc = request.POST.get('sigrc')
-        
-        if not numero or not sigrc:
-            return HttpResponse("Erro: os campos 'numero' e 'sigrc' são obrigatórios", status=400)
-
-        ocorrencia = Ocorrencia(
-            numero=numero,
-            sigrc=sigrc,
-            endereco=request.POST.get('endereco'),
-            bairro=request.POST.get('bairro'),
-            distrito=request.POST.get('distrito'),
-            area_risco=request.POST.get('area_risco'),
-            motivo=request.POST.get('motivo'),
-            data=request.POST.get('data')
-        )
-        ocorrencia.save()
-        return redirect('lista_ocorrencias')  # redireciona para a lista de ocorrências
-    return redirect('cadastro_ocorrencia')  # caso não seja POST, retorna ao cadastro
-
 
 # Função para listar todas as ocorrências
 def listar_ocorrencias(request):
@@ -137,7 +115,7 @@ def editar_ocorrencia_inline(request, id):
 def excluir_ocorrencia(request, id):
     ocorrencia = get_object_or_404(Ocorrencia, id=id)
     ocorrencia.delete()
-    return redirect('ocorrencias/lista_ocorrencias.html')
+    return redirect('lista_ocorrencias')
 
 def home(request):
     return render(request, 'ocorrencias/home.html')
@@ -188,7 +166,7 @@ def salvar_ocorrencia(request):
         if form.is_valid():
             try:
                 form.save()
-                return redirect('ocorrencias/lista_ocorrencias.html')
+                return redirect('lista_ocorrencias')
             except IntegrityError as e:
                 if 'ocorrencias_ocorrencia_numero_key' in str(e):
                     form.add_error('numero', 'Número de FOC já cadastrado.')
