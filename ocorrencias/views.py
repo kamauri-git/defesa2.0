@@ -44,7 +44,7 @@ def relatorios(request):
 # Função para listar todas as ocorrências
 def listar_ocorrencias(request):
     ocorrencias = Ocorrencia.objects.all().order_by('-numero')
-    return render(request, 'ocorrencias/lista_ocorrencias.html', {'ocorrencias': ocorrencias})
+    return render(request, 'ocorrencias/lista_ocorrencias', {'ocorrencias': ocorrencias})
 
 def gerar_relatorio_pdf(request):
     # Filtros: obter parâmetros da requisição (ex: data, bairro, etc)
@@ -87,7 +87,7 @@ def busca_relatorios(request):
     if motivo:
         ocorrencias = ocorrencias.filter(motivo__icontains=motivo)
 
-    return render (request, 'ocorrencias/relatorios.html', {'ocorrencias': ocorrencias})
+    return render (request, 'ocorrencias/relatorios', {'ocorrencias': ocorrencias})
 
 
 @require_POST
@@ -101,7 +101,15 @@ def editar_ocorrencia_inline(request, id):
     ocorrencia.distrito = request.POST.get('distrito')
 
     area_risco_valor = request.POST.get('area_risco')
-    ocorrencia.area_risco = int(area_risco_valor) if area_risco_valor else None
+
+    # Verificar se o valor é um número válido ou se está vazio
+    if area_risco_valor is not None and area_risco_valor != '':
+        try:
+            ocorrencia.area_risco = int(area_risco_valor)
+        except ValueError:
+            ocorrencia.area_risco = None  # ou algum valor padrão, se desejar
+    else:
+        ocorrencia.area_risco = None
 
     ocorrencia.motivo = request.POST.get('motivo')
     ocorrencia.data = request.POST.get('data')
@@ -118,7 +126,7 @@ def excluir_ocorrencia(request, id):
     return redirect('lista_ocorrencias')
 
 def home(request):
-    return render(request, 'ocorrencias/home.html')
+    return render(request, 'ocorrencias/home')
 
 def graficos_ocorrencias(request):
     # Pegando filtros que vieram via GET
@@ -158,7 +166,7 @@ def graficos_ocorrencias(request):
         'total_distritos': total_distritos,
     }
 
-    return render(request, 'ocorrencias/graficos.html', context)
+    return render(request, 'ocorrencias/graficos', context)
 
 def salvar_ocorrencia(request):
     if request.method == 'POST':
@@ -173,4 +181,4 @@ def salvar_ocorrencia(request):
     else:
         form = OcorrenciaForm()
 
-    return render(request, 'ocorrencias/cadastro.html', {'form': form})
+    return render(request, 'ocorrencias/cadastro', {'form': form})
