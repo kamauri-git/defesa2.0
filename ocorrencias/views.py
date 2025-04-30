@@ -44,7 +44,7 @@ def relatorios(request):
 # Função para listar todas as ocorrências
 def listar_ocorrencias(request):
     ocorrencias = Ocorrencia.objects.all().order_by('-numero')
-    return render(request, 'ocorrencias/lista_ocorrencias', {'ocorrencias': ocorrencias})
+    return render(request, 'ocorrencias/lista_ocorrencias.html', {'ocorrencias': ocorrencias})
 
 def gerar_relatorio_pdf(request):
     # Filtros: obter parâmetros da requisição (ex: data, bairro, etc)
@@ -87,7 +87,7 @@ def busca_relatorios(request):
     if motivo:
         ocorrencias = ocorrencias.filter(motivo__icontains=motivo)
 
-    return render (request, 'ocorrencias/relatorios', {'ocorrencias': ocorrencias})
+    return render (request, 'ocorrencias/relatorios.html', {'ocorrencias': ocorrencias})
 
 
 @require_POST
@@ -126,7 +126,7 @@ def excluir_ocorrencia(request, id):
     return redirect('lista_ocorrencias')
 
 def home(request):
-    return render(request, 'ocorrencias/home')
+    return render(request, 'ocorrencias/home.html')
 
 def graficos_ocorrencias(request):
     # Pegando filtros que vieram via GET
@@ -166,7 +166,7 @@ def graficos_ocorrencias(request):
         'total_distritos': total_distritos,
     }
 
-    return render(request, 'ocorrencias/graficos', context)
+    return render(request, 'ocorrencias/graficos.html', context)
 
 def salvar_ocorrencia(request):
     if request.method == 'POST':
@@ -181,4 +181,4 @@ def salvar_ocorrencia(request):
     else:
         form = OcorrenciaForm()
 
-    return render(request, 'ocorrencias/cadastro', {'form': form})
+    return render(request, 'ocorrencias/cadastro.html', {'form': form})
