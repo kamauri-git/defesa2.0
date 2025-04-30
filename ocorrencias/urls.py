@@ -7,7 +7,6 @@ urlpatterns = [
     path('cadastro/', views.cadastro_ocorrencia, name='cadastro_ocorrencia'),  # Cadastro de ocorrências
     path('salvar/', views.salvar_ocorrencia, name='salvar_ocorrencia'),
     path('lista/', views.lista_ocorrencias, name='lista_ocorrencias'),  # Lista de ocorrências
-    path('listar/', views.listar_ocorrencias, name='listar'),
     path('relatorios/', views.busca_relatorios, name='relatorios'),  # Nova URL para busca e relatórios
     path('gerar_relatorio_pdf/', views.gerar_relatorio_pdf, name='gerar_relatorio_pdf'),  # URL para gerar PDF
     path('ocorrencia/editar/<int:id>/', views.editar_ocorrencia_inline, name='editar_ocorrencia_inline'),

@@ -59,8 +59,8 @@ def salvar_ocorrencia(request):
             data=request.POST.get('data')
         )
         ocorrencia.save()
-        return redirect('ocorrencias/lista_ocorrencias.html')  # redireciona para a lista de ocorrências
-    return redirect('ocorrencias/cadastro_ocorrencia.html')  # caso não seja POST, retorna ao cadastro
+        return redirect('lista_ocorrencias')  # redireciona para a lista de ocorrências
+    return redirect('cadastro_ocorrencia')  # caso não seja POST, retorna ao cadastro
 
 
 # Função para listar todas as ocorrências
