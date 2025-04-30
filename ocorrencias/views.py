@@ -24,7 +24,7 @@ def cadastro_ocorrencia(request):
         form = OcorrenciaForm(request.POST)
         if form.is_valid():
             form.save()  # Salva os dados no banco
-            return redirect('lista_ocorrencias')  # Redireciona para a lista de ocorrências
+            return redirect('ocorrencias/lista_ocorrencias.html')  # Redireciona para a lista de ocorrências
     else:
         form = OcorrenciaForm()
 
@@ -59,8 +59,8 @@ def salvar_ocorrencia(request):
             data=request.POST.get('data')
         )
         ocorrencia.save()
-        return redirect('lista_ocorrencias')  # redireciona para a lista de ocorrências
-    return redirect('cadastro_ocorrencia')  # caso não seja POST, retorna ao cadastro
+        return redirect('ocorrencias/lista_ocorrencias.html')  # redireciona para a lista de ocorrências
+    return redirect('ocorrencias/cadastro_ocorrencia.html')  # caso não seja POST, retorna ao cadastro
 
 
 # Função para listar todas as ocorrências
@@ -132,7 +132,7 @@ def editar_ocorrencia_inline(request, id):
 def excluir_ocorrencia(request, id):
     ocorrencia = get_object_or_404(Ocorrencia, id=id)
     ocorrencia.delete()
-    return redirect('lista_ocorrencias')
+    return redirect('ocorrencias/lista_ocorrencias.html')
 
 def home(request):
     return render(request, 'ocorrencias/home.html')
