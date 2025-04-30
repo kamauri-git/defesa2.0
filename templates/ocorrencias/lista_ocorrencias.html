@@ -36,8 +36,14 @@
       align-items: center;
     }
 
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
+      min-width: 900px;
       margin-top: 30px;
       border-collapse: collapse;
       background-color: #ffffff;
@@ -66,6 +72,7 @@
       border: 1px solid #ddd;
       transition: border-color 0.3s ease;
       box-sizing: border-box;
+      width: 100%;
     }
 
     input[type="text"]:focus, input[type="date"]:focus {
@@ -73,10 +80,10 @@
       outline: none;
     }
 
-    .small-input { width: 80px; }
-    .medium-input { width: 150px; }
-    .large-input { width: 250px; }
-    .extra-large-input { width: 250px; }
+    .small-input { max-width: 60px; }
+    .medium-input { max-width: 120px; }
+    .large-input { max-width: 200px; }
+    .extra-large-input { max-width: 100%; }
 
     .btn {
       padding: 10px 20px;
@@ -111,6 +118,26 @@
       color: white;
       font-size: 0.9em;
     }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 0.9em;
+      }
+
+      .btn {
+        font-size: 0.8em;
+        padding: 6px 12px;
+      }
+
+      header {
+        font-size: 1.5em;
+        padding: 15px 0;
+      }
+
+      .logo {
+        width: 90px;
+      }
+    }
   </style>
 
   <script>
@@ -128,46 +155,48 @@
   </header>
 
   <div class="container">
-    <table>
-      <thead>
-        <tr>
-          <th>FOC N.º</th>
-          <th>SIGRC N.º</th>
-          <th>Endereço</th>
-          <th>Bairro</th>
-          <th>Distrito</th>
-          <th>Área de Risco</th>
-          <th>Motivo</th>
-          <th>Data</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ocorrencia in ocorrencias %}
-        <form method="post" action="{% url 'editar_ocorrencia_inline' ocorrencia.id %}">
-          {% csrf_token %}
+    <div class="table-responsive">
+      <table>
+        <thead>
           <tr>
-            <td><input type="text" name="numero" value="{{ ocorrencia.numero }}" class="small-input"></td>
-            <td><input type="text" name="sigrc" value="{{ ocorrencia.sigrc }}" class="small-input"></td>
-            <td><input type="text" name="endereco" value="{{ ocorrencia.endereco }}" class="extra-large-input"></td>
-            <td><input type="text" name="bairro" value="{{ ocorrencia.bairro }}" class="medium-input"></td>
-            <td><input type="text" name="distrito" value="{{ ocorrencia.distrito }}" class="medium-input"></td>
-            <td><input type="text" name="area_risco" value="{{ ocorrencia.area_risco }}" class="small-input"></td>
-            <td><input type="text" name="motivo" value="{{ ocorrencia.motivo }}" class="medium-input"></td>
-            <td><input type="date" name="data" value="{{ ocorrencia.data|date:'Y-m-d' }}"></td>
-            <td>
-              <button type="submit" class="btn">Salvar</button>
-              <a href="{% url 'excluir_ocorrencia' ocorrencia.id %}" class="btn btn-danger" onclick="return confirmarExclusao()">Excluir</a>
-            </td>
+            <th>FOC N.º</th>
+            <th>SIGRC N.º</th>
+            <th>Endereço</th>
+            <th>Bairro</th>
+            <th>Distrito</th>
+            <th>Área de Risco</th>
+            <th>Motivo</th>
+            <th>Data</th>
+            <th>Ações</th>
           </tr>
-        </form>
-        {% empty %}
-        <tr>
-          <td colspan="9">Nenhuma ocorrência registrada.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for ocorrencia in ocorrencias %}
+          <form method="post" action="{% url 'editar_ocorrencia_inline' ocorrencia.id %}">
+            {% csrf_token %}
+            <tr>
+              <td><input type="text" name="numero" value="{{ ocorrencia.numero }}" class="small-input"></td>
+              <td><input type="text" name="sigrc" value="{{ ocorrencia.sigrc }}" class="medium-input"></td>
+              <td><input type="text" name="endereco" value="{{ ocorrencia.endereco }}" class="extra-large-input"></td>
+              <td><input type="text" name="bairro" value="{{ ocorrencia.bairro }}" class="medium-input"></td>
+              <td><input type="text" name="distrito" value="{{ ocorrencia.distrito }}" class="medium-input"></td>
+              <td><input type="text" name="area_risco" value="{{ ocorrencia.area_risco }}" class="small-input"></td>
+              <td><input type="text" name="motivo" value="{{ ocorrencia.motivo }}" class="extra-large-input"></td>
+              <td><input type="date" name="data" value="{{ ocorrencia.data|date:'Y-m-d' }}"></td>
+              <td>
+                <button type="submit" class="btn">Salvar</button>
+                <a href="{% url 'excluir_ocorrencia' ocorrencia.id %}" class="btn btn-danger" onclick="return confirmarExclusao()">Excluir</a>
+              </td>
+            </tr>
+          </form>
+          {% empty %}
+          <tr>
+            <td colspan="9">Nenhuma ocorrência registrada.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
     <a href="{% url 'home' %}" class="btn">VOLTAR</a>
   </div>
