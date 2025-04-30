@@ -99,18 +99,7 @@ def editar_ocorrencia_inline(request, id):
     ocorrencia.endereco = request.POST.get('endereco')
     ocorrencia.bairro = request.POST.get('bairro')
     ocorrencia.distrito = request.POST.get('distrito')
-
-    area_risco_valor = request.POST.get('area_risco')
-
-    # Verificar se o valor é um número válido ou se está vazio
-    if area_risco_valor is not None and area_risco_valor != '':
-        try:
-            ocorrencia.area_risco = int(area_risco_valor)
-        except ValueError:
-            ocorrencia.area_risco = None  # ou algum valor padrão, se desejar
-    else:
-        ocorrencia.area_risco = None
-
+    ocorrencia.area_risco = request.POST.get('area_risco')
     ocorrencia.motivo = request.POST.get('motivo')
     ocorrencia.data = request.POST.get('data')
 
@@ -167,6 +156,7 @@ def graficos_ocorrencias(request):
     }
 
     return render(request, 'ocorrencias/graficos.html', context)
+
 
 def salvar_ocorrencia(request):
     if request.method == 'POST':
