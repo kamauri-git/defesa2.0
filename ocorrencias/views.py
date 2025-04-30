@@ -121,13 +121,18 @@ def editar_ocorrencia_inline(request, id):
     ocorrencia.endereco = request.POST.get('endereco')
     ocorrencia.bairro = request.POST.get('bairro')
     ocorrencia.distrito = request.POST.get('distrito')
-    ocorrencia.area_risco = request.POST.get('area_risco')
+
+    area_risco_valor = request.POST.get('area_risco')
+    ocorrencia.area_risco = int(area_risco_valor) if area_risco_valor else None
+
     ocorrencia.motivo = request.POST.get('motivo')
     ocorrencia.data = request.POST.get('data')
 
     ocorrencia.save()
 
-    return redirect('ocorrencias/lista_ocorrencias.html', {'ocorrencias': lista_ocorrencias})
+    return redirect('lista_ocorrencias')
+
+
 
 def excluir_ocorrencia(request, id):
     ocorrencia = get_object_or_404(Ocorrencia, id=id)
