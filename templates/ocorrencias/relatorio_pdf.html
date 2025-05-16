@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            margin: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f2a654;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            font-weight: bold;
+            color: #000;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+    </style>
+</head>
+<body>
+    <h2>RELATÓRIO DE OCORRÊNCIAS - DEFESA CIVIL</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="10%">FOC Nº</th>
+                <th width="25%">Endereço</th>
+                <th width="15%">Bairro</th>
+                <th width="15%">Distrito</th>
+                <th width="20%">Motivo</th>
+                <th width="15%">Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ocorrencia in ocorrencias %}
+                <tr>
+                    <td>{{ ocorrencia.numero }}</td>
+                    <td>{{ ocorrencia.endereco }}</td>
+                    <td>{{ ocorrencia.bairro }}</td>
+                    <td>{{ ocorrencia.distrito }}</td>
+                    <td>{{ ocorrencia.motivo }}</td>
+                    <td>{{ ocorrencia.data|date:"d/m/Y" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">Nenhuma ocorrência encontrada.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -200,6 +200,7 @@
 
     <a href="{% url 'home' %}" class="btn">VOLTAR</a>
     <a href="{% url 'graficos_ocorrencias' %}?{{ request.GET.urlencode }}" class="btn">Gerar Gráficos</a>
+    <a href="{% url 'relatorio_pdf' %}?{{ request.GET.urlencode }}" class="btn">Gerar PDF</a>
 </div>
 
 <footer>

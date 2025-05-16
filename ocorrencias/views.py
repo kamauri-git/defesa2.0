@@ -13,6 +13,16 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.db import IntegrityError
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from datetime import datetime
+from reportlab.lib.pagesizes import letter, landscape
+from io import BytesIO
+
+
+
+
 
 # Função para a página inicial
 def home(request):
@@ -176,3 +186,75 @@ def salvar_ocorrencia(request):
         form = OcorrenciaForm()
 
     return render(request, 'ocorrencias/cadastro.html', {'form': form})
+
+def gerar_relatorio_pdf(request):
+    data_inicial = request.GET.get('data_inicial')
+    data_final = request.GET.get('data_final')
+    motivo = request.GET.get('motivo')
+    bairro = request.GET.get('bairro')
+    distrito = request.GET.get('distrito')
+    endereco = request.GET.get('endereco')
+
+    ocorrencias = Ocorrencia.objects.all().order_by('-numero')
+
+    if data_inicial and data_final:
+        ocorrencias = ocorrencias.filter(data__range=[data_inicial, data_final])
+    if motivo:
+        ocorrencias = ocorrencias.filter(motivo__icontains=motivo)
+    if bairro:
+        ocorrencias = ocorrencias.filter(bairro__icontains=bairro)
+    if distrito:
+        ocorrencias = ocorrencias.filter(distrito__icontains=distrito)
+    if endereco:
+        ocorrencias = ocorrencias.filter(endereco__icontains=endereco)
+
+    buffer = BytesIO()
+    # Usar página em paisagem para dar mais largura
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
+    styles = getSampleStyleSheet()
+
+    elementos = []
+
+    titulo = Paragraph("Relatório de Ocorrências", styles['Title'])
+    elementos.append(titulo)
+    elementos.append(Spacer(1, 12))
+
+    dados = [
+        ['Número', 'Data', 'Motivo', 'Bairro', 'Distrito', 'Endereço']
+    ]
+    for o in ocorrencias:
+        dados.append([
+            str(o.numero),
+            o.data.strftime('%d/%m/%Y') if o.data else '',
+            o.motivo,
+            o.bairro,
+            o.distrito,
+            o.endereco,
+        ])
+
+    # Definindo larguras relativas para cada coluna (ajuste se quiser)
+    colunas_largura = [50, 70, 150, 100, 100, 200]
+
+    tabela = Table(dados, colWidths=colunas_largura, repeatRows=1, hAlign='CENTER')
+
+    estilo = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.orange),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.lightgoldenrodyellow),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.darkorange),
+    ])
+
+    tabela.setStyle(estilo)
+
+    elementos.append(tabela)
+
+    doc.build(elementos)
+
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="relatorio_ocorrencias.pdf"'
+    return response
