@@ -48,17 +48,17 @@ def listar_ocorrencias(request):
 
 def gerar_relatorio_pdf(request):
     # Filtros: obter parâmetros da requisição (ex: data, bairro, etc)
-    data_inicial = request.GET.get('data_inicial', None)
-    data_final = request.GET.get('data_final', None)
+    data_inicio = request.GET.get('data_inicial', None)
+    data_fim = request.GET.get('data_final', None)
     bairro = request.GET.get('bairro', None)
     
     # Filtrar ocorrências com base nos parâmetros (ajuste conforme necessário)
     ocorrencias = Ocorrencia.objects.all().order_by('-numero')
     
-    if data_inicial:
+    if data_inicio:
         ocorrencias = ocorrencias.filter(data__gte=data_inicial).order_by('-numero')
     
-    if data_final:
+    if data_fim:
         ocorrencias = ocorrencias.filter(data__lte=data_final).order_by('-numero')
     
     if bairro:
@@ -77,6 +77,10 @@ def busca_relatorios(request):
 
     if data_inicial and data_final:
         ocorrencias = ocorrencias.filter(data__range=[data_inicial, data_final])
+    elif data_inicial:
+        ocorrencias = ocorrencias.filter(data__gte=data_inicial)
+    elif data_final:
+        ocorrencias = ocorrencias.filter(data__lte=data_final)
 
     if endereco:
         ocorrencias = ocorrencias.filter(endereco__icontains=endereco)
@@ -87,7 +91,7 @@ def busca_relatorios(request):
     if motivo:
         ocorrencias = ocorrencias.filter(motivo__icontains=motivo)
 
-    return render (request, 'ocorrencias/relatorios.html', {'ocorrencias': ocorrencias})
+    return render(request, 'ocorrencias/relatorios.html', {'ocorrencias': ocorrencias})
 
 
 @require_POST

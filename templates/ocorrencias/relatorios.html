@@ -1,10 +1,8 @@
-<!-- templates/relatorios.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <H3>RELATÓRIO E FILTRO DE OCORRÊNCIAS</H3>
-    <style>
+      <style>
         body {
             font-family: 'Poppins', Arial, sans-serif;
             background-color: #fff3e0;
@@ -72,7 +70,6 @@
             justify-content: center;
             gap: 15px;
             margin-bottom: 40px;
-            font-family: 'Poppins', Arial, sans-serif;
         }
 
         .form-group {
@@ -111,7 +108,6 @@
             color: white;
             font-size: 1.1em;
             cursor: pointer;
-            font-family: 'Poppins', Arial, sans-serif;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s, transform 0.2s;
         }
@@ -120,17 +116,20 @@
             background-color: #f57c00;
             transform: translateY(-3px);
         }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
     </style>
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <header>
-    <div>
-        <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
-    </div>
-    RELATÓRIO E FILTRO DE OCORRÊNCIAS DDEC-MB
+    <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo" style="max-height: 60px;">
+    <div>RELATÓRIO E FILTRO DE OCORRÊNCIAS DDEC-MB</div>
 </header>
 
 <div class="container">
@@ -163,8 +162,8 @@
         </div>
 
         <div class="form-group">
-            <input type="date" name="data_inicio" placeholder="Data Início">
-            <input type="date" name="data_fim" placeholder="Data Fim">
+            <input type="date" name="data_inicial" placeholder="Data Início">
+            <input type="date" name="data_final" placeholder="Data Fim">
         </div>
 
         <button type="submit">FILTRAR</button>
@@ -184,7 +183,7 @@
         <tbody>
             {% for ocorrencia in ocorrencias %}
                 <tr>
-                    <td>{{ocorrencia.numero}}</td>
+                    <td>{{ ocorrencia.numero }}</td>
                     <td>{{ ocorrencia.endereco }}</td>
                     <td>{{ ocorrencia.bairro }}</td>
                     <td>{{ ocorrencia.distrito }}</td>
@@ -200,13 +199,12 @@
     </table>
 
     <a href="{% url 'home' %}" class="btn">VOLTAR</a>
-    <a href="{% url 'graficos_ocorrencias' %}?{{ request.GET.urlencode }}" class="btn btn-success">
-        Gerar Gráficos
-    </a>
-    
+    <a href="{% url 'graficos_ocorrencias' %}?{{ request.GET.urlencode }}" class="btn">Gerar Gráficos</a>
 </div>
+
 <footer>
     <p>&copy; 2025 UNIVESP DRP14-PJI110 - GRUPO-002 PROJETO INTEGRADOR EM COMPUTAÇÃO I - TURMA 005 - Todos os direitos reservados</p>
 </footer>
+
 </body>
 </html>
