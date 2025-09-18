@@ -1,158 +1,124 @@
-{% load extras %}
-{% block content %}
-<style>
-@media print {
-    body {
-        zoom: 90%;
-        -webkit-print-color-adjust: exact;
-    }
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #ccc;
-        page-break-inside: avoid;
-    }
-    canvas {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-}
+{% load static %}
 
-canvas {
-    max-width: 100%;
-}
-
-.chart-font {
-    font: 16px 'Segoe UI', sans-serif;
-}
-</style>
-
-<div class="container my-5">
-    <!-- Cabeçalho -->
-    <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold">📊 RELATÓRIO DDEC-MB</h1>
-        <p class="text-muted fs-5">Estatísticas de ocorrências</p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráficos de Ocorrências</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: 'Rubik', sans-serif; background:#fff3e0; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h3 { color: #ff9800; margin-bottom: 20px; }
+        select, input[type=date], button { padding: 8px 12px; border-radius: 8px; border:1px solid #ccc; margin-right: 10px; }
+        button { background-color: #fb8c00; color: #fff; border: none; cursor: pointer; }
+        button:hover { background-color: #f57c00; }
+        canvas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h3>Filtros</h3>
+        <select id="filtro-distrito">
+            <option value="">Todos os distritos</option>
+        </select>
+        <select id="filtro-motivo">
+            <option value="">Todos os motivos</option>
+        </select>
+        <input type="date" id="data-inicio">
+        <input type="date" id="data-fim">
+        <button id="aplicar-filtros">Aplicar</button>
     </div>
 
-    <!-- Gráficos -->
-    <div class="row justify-content-center g-4">
-        <!-- Gráfico por Motivo -->
-        <div class="col-lg-6 col-md-12">
-            <div class="card shadow rounded-4 p-3">
-                <div class="card-header text-center bg-white border-0">
-                    <h3 class="fw-semibold mb-0">OCORRÊNCIAS POR TIPO/MOTIVO</h3>
-                    <h4 class="text-muted">TOTAL GERAL: {{ total_motivos }}</h4>
-                </div>
-                <div class="card-body">
-                    {% for motivo in motivos_count %}
-                        <p class="mb-1 fs-6"><strong>{{ motivo.motivo }}</strong>: {{ motivo.total }}</p>
-                    {% endfor %}
-                    <canvas id="graficoMotivos" height="250" class="chart-font"></canvas>
-                </div>
-            </div>
-        </div>
+    <div class="card">
+        <h3>Ocorrências por Motivo</h3>
+        <canvas id="grafico-motivos" width="400" height="200"></canvas>
+    </div>
 
-        <!-- Gráfico por Distrito -->
-        <div class="col-lg-6 col-md-12">
-            <div class="card shadow rounded-4 p-3">
-                <div class="card-header text-center bg-white border-0">
-                    <h3 class="fw-semibold mb-0">OCORRÊNCIAS POR DISTRITO</h3>
-                    <h4 class="text-muted">TOTAL GERAL: {{ total_distritos }}</h4>
-                </div>
-                <div class="card-body">
-                    {% for distrito in distritos_count %}
-                        <p class="mb-1 fs-6"><strong>{{ distrito.distrito }}</strong>: {{ distrito.total }}</p>
-                    {% endfor %}
-                    <canvas id="graficoDistritos" height="250" class="chart-font"></canvas>
-                </div>
-            </div>
-        </div>
+    <div class="card">
+        <h3>Ocorrências por Distrito</h3>
+        <canvas id="grafico-distritos" width="400" height="200"></canvas>
     </div>
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-    const motivosData = {
-        labels: {{ motivos_count|pluck:"motivo"|safe }},
-        datasets: [{
-            label: 'Ocorrências',
-            data: {{ motivos_count|pluck:"total"|safe }},
-            backgroundColor: ['#4bc0c0', '#ff6384', '#ffce56', '#36a2eb', '#9966ff'],
-            borderRadius: 6
-        }]
-    };
+let chartMotivos = null;
+let chartDistritos = null;
 
-    const distritosData = {
-        labels: {{ distritos_count|pluck:"distrito"|safe }},
-        datasets: [{
-            label: 'Ocorrências',
-            data: {{ distritos_count|pluck:"total"|safe }},
-            backgroundColor: ['#ff9f40', '#36a2eb', '#4bc0c0', '#ffcd56', '#9966ff'],
-            hoverOffset: 10
-        }]
-    };
+function carregarFiltros(data) {
+    const selectDistrito = $('#filtro-distrito');
+    const selectMotivo = $('#filtro-motivo');
+    selectDistrito.empty().append('<option value="">Todos os distritos</option>');
+    selectMotivo.empty().append('<option value="">Todos os motivos</option>');
 
-    const baseOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                labels: {
-                    font: {
-                        size: 16
-                    }
-                }
+    data.distritos.labels.forEach(d => selectDistrito.append(`<option value="${d}">${d}</option>`));
+    data.motivos.labels.forEach(m => selectMotivo.append(`<option value="${m}">${m}</option>`));
+}
+
+function atualizarGraficos(filtros={}) {
+    $.getJSON("{% url 'graficos_data' %}", filtros, function(data) {
+        carregarFiltros(data);
+
+        // Gráfico Motivos
+        if (chartMotivos) chartMotivos.destroy();
+        const ctxMotivos = document.getElementById('grafico-motivos').getContext('2d');
+        chartMotivos = new Chart(ctxMotivos, {
+            type: 'bar',
+            data: {
+                labels: data.motivos.labels,
+                datasets: [{
+                    label: 'Quantidade',
+                    data: data.motivos.data,
+                    backgroundColor: '#fb8c00'
+                }]
             },
-            tooltip: {
-                bodyFont: {
-                    size: 16
-                },
-                callbacks: {
-                    label: (ctx) => `${ctx.raw} ocorrências`
-                }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    font: {
-                        size: 16
-                    }
-                }
+        });
+
+        // Gráfico Distritos
+        if (chartDistritos) chartDistritos.destroy();
+        const ctxDistritos = document.getElementById('grafico-distritos').getContext('2d');
+        chartDistritos = new Chart(ctxDistritos, {
+            type: 'bar',
+            data: {
+                labels: data.distritos.labels,
+                datasets: [{
+                    label: 'Quantidade',
+                    data: data.distritos.data,
+                    backgroundColor: '#f57c00'
+                }]
             },
-            x: {
-                ticks: {
-                    font: {
-                        size: 14
-                    }
-                }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
-        }
-    };
-
-    new Chart(document.getElementById('graficoMotivos'), {
-        type: 'bar',
-        data: motivosData,
-        options: baseOptions
+        });
     });
+}
 
-    new Chart(document.getElementById('graficoDistritos'), {
-        type: 'doughnut',
-        data: distritosData,
-        options: {
-            ...baseOptions,
-            scales: {},
-            plugins: {
-                ...baseOptions.plugins,
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        font: { size: 16 }
-                    }
-                }
-            }
-        }
+// Inicializa os gráficos ao carregar a página
+$(document).ready(function() {
+    atualizarGraficos();
+
+    // Botão de filtros
+    $('#aplicar-filtros').click(function() {
+        const filtros = {
+            distrito: $('#filtro-distrito').val(),
+            motivo: $('#filtro-motivo').val(),
+            data_inicio: $('#data-inicio').val(),
+            data_fim: $('#data-fim').val()
+        };
+        atualizarGraficos(filtros);
     });
+});
 </script>
-{% endblock %}
+</body>
+</html>

@@ -22,11 +22,31 @@
       padding: 20px 0;
       font-size: 2em;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      position: relative;
     }
 
     .logo {
       width: 120px;
       margin-bottom: 10px;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      font-size: 0.9em;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #c62828;
+      transform: scale(1.05);
     }
 
     .container {
@@ -51,12 +71,19 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
       width: 320px;
       text-align: center;
+      animation: pulse 1.5s infinite;
     }
 
     .btn:hover {
       background-color: #f57c00;
-      transform: translateY(-2px);
+      transform: scale(1.05);
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
 
     footer {
@@ -68,12 +95,16 @@
     }
   </style>
 </head>
-<body>
+<body onload="exibirBoasVindas()">
   <header>
     <div>
       <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo">
     </div>
-    <H3>CONTROLE DE OCORRÊNCIAS DDEC-MB</H3>
+    <h3>CONTROLE DE OCORRÊNCIAS DDEC-MB</h3>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="logout-btn">Sair</button>
+    </form>
   </header>
 
   <div class="container">
@@ -91,5 +122,6 @@
   <footer>
     <p>&copy; 2025 UNIVESP DRP14-PJI110 - GRUPO-002 PROJETO INTEGRADOR EM COMPUTAÇÃO I - TURMA 005 - Todos os direitos reservados</p>
   </footer>
-</body>
+
+ </body>
 </html>

@@ -1,143 +1,133 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-      <style>
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            background-color: #fff3e0;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório e Filtros de Ocorrências</title>
+<style>
+    body {
+        font-family: 'Poppins', Arial, sans-serif;
+        background-color: #fff3e0;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    header {
+        background-color: #ff9800;
+        color: white;
+        padding: 20px;
+        font-size: 2em;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    .container {
+        margin: 30px auto;
+        width: 90%;
+        max-width: 1000px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        background-color: white;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 12px 8px;
+        text-align: center;
+        cursor: pointer;
+    }
+    th {
+        background-color: #ffb74d;
+        font-weight: bold;
+    }
+    tr:nth-child(even) { background-color: #ffe0b2; }
 
-        header {
-            background-color: #ff9800;
-            color: white;
-            padding: 20px;
-            font-size: 2em;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
+    .btn {
+        margin: 10px 5px;
+        padding: 12px 30px;
+        background-color: #fb8c00;
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-size: 1.1em;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        display: inline-block;
+    }
+    .btn:hover { background-color: #f57c00; }
 
-        .container {
-            margin: 30px auto;
-            width: 90%;
-            max-width: 1000px;
-        }
+    .form-filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; align-items: center; }
+    input[type="text"], input[type="date"], select {
+        padding: 10px 12px;
+        width: 200px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        transition: 0.3s;
+    }
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+        border-color: #fb8c00;
+        outline: none;
+        box-shadow: 0 0 8px rgba(251,140,0,0.5);
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background-color: white;
-        }
+    footer { margin-top: 40px; padding: 20px; font-size: 0.9em; color: #666; }
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 12px 8px;
-            text-align: center;
-        }
+    /* Toast moderno */
+    #toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        background-color: rgba(251,140,0,0.95);
+        color: white;
+        text-align: center;
+        border-radius: 10px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        z-index: 9999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
 
-        th {
-            background-color: #ffb74d;
-            font-weight: bold;
-        }
+    #searchTable {
+        margin-bottom:15px; 
+        padding:8px; 
+        width:300px; 
+        border-radius:5px; 
+        border:1px solid #ccc;
+        font-size:1em;
+    }
 
-        tr:nth-child(even) {
-            background-color: #ffe0b2;
-        }
-
-        .btn {
-            margin-top: 30px;
-            padding: 15px 30px;
-            background-color: #fb8c00;
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-size: 1.2em;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background-color: #f57c00;
-            transform: translateY(-2px);
-        }
-
-        .form-filtros {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        select {
-            padding: 12px 15px;
-            width: 220px;
-            font-size: 1em;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-family: 'Poppins', Arial, sans-serif;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        select:focus {
-            border-color: #fb8c00;
-            outline: none;
-            box-shadow: 0 0 8px rgba(251, 140, 0, 0.5);
-        }
-
-        button[type="submit"] {
-            padding: 12px 30px;
-            margin-top: 10px;
-            background-color: #fb8c00;
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-size: 1.1em;
-            cursor: pointer;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #f57c00;
-            transform: translateY(-3px);
-        }
-
-        footer {
-            margin-top: 40px;
-            padding: 20px;
-            font-size: 0.9em;
-            color: #666;
-        }
-    </style>
+    /* Paginação */
+    .pagination {
+        margin: 15px 0;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+    .pagination button {
+        padding: 6px 12px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background: #fb8c00;
+        color: white;
+        cursor: pointer;
+    }
+    .pagination button.active { background: #f57c00; }
+</style>
 </head>
 <body>
 
 <header>
-    <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil São Paulo" class="logo" style="max-height: 60px;">
+    <img src="https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/comunicacao/noticias/defesacivil.jpg" alt="Logo Defesa Civil" style="max-height: 60px;">
     <div>RELATÓRIO E FILTRO DE OCORRÊNCIAS DDEC-MB</div>
 </header>
 
 <div class="container">
-    <form method="GET" class="form-filtros">
-        <div class="form-group">
-            <input type="text" name="endereco" placeholder="Endereço">
-        </div>
-
+    <form id="filterForm" class="form-filtros" method="GET">
+        <div class="form-group"><input type="text" name="endereco" placeholder="Endereço"></div>
         <div class="form-group">
             <select name="distrito">
                 <option value="">Distrito</option>
@@ -145,7 +135,6 @@
                 <option value="Jd. São Luis">Jardim São Luís</option>
             </select>
         </div>
-
         <div class="form-group">
             <select name="motivo">
                 <option value="">Motivo</option>
@@ -160,52 +149,146 @@
                 <option value="Outros">Outros</option>
             </select>
         </div>
-
         <div class="form-group">
-            <input type="date" name="data_inicial" placeholder="Data Início">
-            <input type="date" name="data_final" placeholder="Data Fim">
+            <input type="date" name="data_inicial" id="data_inicial">
+            <input type="date" name="data_final" id="data_final">
         </div>
-
-        <button type="submit">FILTRAR</button>
+        <button type="submit" class="btn">FILTRAR</button>
+        <button type="button" id="clearFilters" class="btn">LIMPAR FILTROS</button>
     </form>
 
-    <table>
+    <input type="text" id="searchTable" placeholder="Pesquisa rápida na tabela...">
+
+    <table id="ocorrenciasTable">
         <thead>
             <tr>
-                <th>FOC N.º</th>
-                <th>Endereço</th>
-                <th>Bairro</th>
-                <th>Distrito</th>
-                <th>Motivo</th>
-                <th>Data</th>
+                <th data-column="numero">FOC N.º</th>
+                <th data-column="endereco">Endereço</th>
+                <th data-column="bairro">Bairro</th>
+                <th data-column="distrito">Distrito</th>
+                <th data-column="motivo">Motivo</th>
+                <th data-column="data">Data</th>
             </tr>
         </thead>
         <tbody>
             {% for ocorrencia in ocorrencias %}
-                <tr>
-                    <td>{{ ocorrencia.numero }}</td>
-                    <td>{{ ocorrencia.endereco }}</td>
-                    <td>{{ ocorrencia.bairro }}</td>
-                    <td>{{ ocorrencia.distrito }}</td>
-                    <td>{{ ocorrencia.motivo }}</td>
-                    <td>{{ ocorrencia.data|date:"d/m/Y" }}</td>
-                </tr>
+            <tr>
+                <td>{{ ocorrencia.numero }}</td>
+                <td>{{ ocorrencia.endereco }}</td>
+                <td>{{ ocorrencia.bairro }}</td>
+                <td>{{ ocorrencia.distrito }}</td>
+                <td>{{ ocorrencia.motivo }}</td>
+                <td>{{ ocorrencia.data|date:"d/m/Y" }}</td>
+            </tr>
             {% empty %}
-                <tr>
-                    <td colspan="6">Nenhuma ocorrência encontrada.</td>
-                </tr>
+            <tr><td colspan="6">Nenhuma ocorrência encontrada.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 
+    <div class="pagination" id="pagination"></div>
+
     <a href="{% url 'home' %}" class="btn">VOLTAR</a>
     <a href="{% url 'graficos_ocorrencias' %}?{{ request.GET.urlencode }}" class="btn">Gerar Gráficos</a>
     <a href="{% url 'relatorio_pdf' %}?{{ request.GET.urlencode }}" class="btn">Gerar PDF</a>
+    <a href="{% url 'logout' %}" class="btn">SAIR</a>
 </div>
+
+<div id="toast"></div>
 
 <footer>
     <p>&copy; 2025 UNIVESP DRP14-PJI110 - GRUPO-002 PROJETO INTEGRADOR EM COMPUTAÇÃO I - TURMA 005 - Todos os direitos reservados</p>
 </footer>
+
+<script>
+const rowsAll = Array.from(document.querySelectorAll('#ocorrenciasTable tbody tr'));
+const rowsPerPage = 10;
+let currentPage = 1;
+
+// Função para mostrar toast
+function showToast(message){
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 3000);
+}
+
+// Validação de datas
+document.getElementById('filterForm').addEventListener('submit', function(e){
+    const inicio = document.getElementById('data_inicial').value;
+    const fim = document.getElementById('data_final').value;
+    if (inicio && fim && inicio > fim) {
+        showToast('Data Início não pode ser maior que Data Fim.');
+        e.preventDefault();
+    }
+});
+
+// Limpar filtros
+document.getElementById('clearFilters').addEventListener('click', function(){
+    document.getElementById('filterForm').reset();
+    document.getElementById('searchTable').value = '';
+    currentPage = 1;
+    displayPage(currentPage);
+});
+
+// Filtro instantâneo
+document.getElementById('searchTable').addEventListener('keyup', function(){
+    currentPage = 1;
+    displayPage(currentPage, this.value.toLowerCase());
+});
+
+// Ordenação da tabela
+document.querySelectorAll('#ocorrenciasTable th').forEach(th => {
+    th.addEventListener('click', () => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        Array.from(tbody.querySelectorAll('tr'))
+        .sort((a,b) => {
+            const col = Array.from(th.parentNode.children).indexOf(th);
+            const aText = a.children[col].textContent.trim();
+            const bText = b.children[col].textContent.trim();
+            if(!isNaN(Date.parse(aText)) && !isNaN(Date.parse(bText))){
+                return new Date(aText) - new Date(bText);
+            }
+            return aText.localeCompare(bText);
+        })
+        .forEach(tr => tbody.appendChild(tr));
+        displayPage(currentPage);
+    });
+});
+
+// Paginação + filtro
+function displayPage(page, filter = '') {
+    const tbody = document.querySelector('#ocorrenciasTable tbody');
+    tbody.innerHTML = '';
+    const rowsVisible = rowsAll.filter(row => row.textContent.toLowerCase().includes(filter));
+    if(rowsVisible.length === 0) showToast('Nenhum resultado encontrado!');
+    const start = (page -1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    rowsVisible.slice(start, end).forEach(row => tbody.appendChild(row));
+    renderPagination(rowsVisible.length);
+}
+
+// Renderiza botões de paginação
+function renderPagination(totalRows) {
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+    for(let i=1;i<=totalPages;i++){
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if(i === currentPage) btn.classList.add('active');
+        btn.addEventListener('click', ()=> {
+            currentPage = i;
+            displayPage(currentPage, document.getElementById('searchTable').value.toLowerCase());
+        });
+        pagination.appendChild(btn);
+    }
+}
+
+// Inicializa primeira página
+displayPage(currentPage);
+</script>
 
 </body>
 </html>

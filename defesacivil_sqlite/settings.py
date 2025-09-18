@@ -5,6 +5,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-secret-key'
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'defesa2-0.onrender.com']
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"   # pra onde vai depois de logar
+LOGOUT_REDIRECT_URL = "/login/"       # pra onde vai depois de sair
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -69,3 +73,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

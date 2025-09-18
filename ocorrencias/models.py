@@ -10,6 +10,8 @@ class Ocorrencia(models.Model):
     bairro = models.CharField(max_length=255)
     distrito = models.CharField(max_length=255)
     area_risco = models.IntegerField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f'Ocorrência {self.numero}'
