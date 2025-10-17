@@ -63,7 +63,7 @@ DATABASES = {
         # IMPORTANT: set DB_PASSWORD in environment (do not commit secrets)
         'PASSWORD': os.environ.get('DB_PASSWORD', 'AuroraClarice@@2025'),
         'HOST': os.environ.get('DB_HOST', 'aws-1-sa-east-1.pooler.supabase.com'),
-        'PORT': os.environ.get('DB_PORT', '6543'),
+    'PORT': os.environ.get('DB_PORT', '5432'),
         'OPTIONS': {
             # Enforce SSL by default for hosted Postgres like Supabase
             'sslmode': os.environ.get('DB_SSLMODE', 'require'),
