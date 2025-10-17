@@ -8,10 +8,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-secret-key')
 # Read DEBUG from environment (default True for local development)
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-# Allow configuring ALLOWED_HOSTS via environment variable (comma-separated)
-# Example: DJANGO_ALLOWED_HOSTS=defesa2-0-rkmo.onrender.com,127.0.0.1
-raw_allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost')
-ALLOWED_HOSTS = [h.strip() for h in raw_allowed.split(',') if h.strip()]
+# For deployment on Render, allow the service host explicitly
+ALLOWED_HOSTS = ['defesa2-0-rkmo.onrender.com']
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"   # pra onde vai depois de logar
 LOGOUT_REDIRECT_URL = "/login/"       # pra onde vai depois de sair
